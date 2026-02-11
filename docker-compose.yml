@@ -11,6 +11,8 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     command: postgres -c listen_addresses='*'
+    networks:
+      - lemmeCook
 
   pgadmin:
     image: dpage/pgadmin4
@@ -24,7 +26,12 @@ services:
       - pgadmin_data:/var/lib/pgadmin
     depends_on:
       - postgres
+    networks:
+      - lemmeCook
 
 volumes:
   postgres_data:
   pgadmin_data:
+
+networks:
+  lemmeCook:
