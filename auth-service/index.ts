@@ -21,7 +21,7 @@ app.use('*', cors({
 app.route('/api/auth', authRoutes)
 
 app.get('/api/protected', requireAuth, async (c) => {
-  const userId = c.get('userId')
+  const userId = c.get('userName')
   const userEmail = c.get('userEmail')
   
   return c.json({ 

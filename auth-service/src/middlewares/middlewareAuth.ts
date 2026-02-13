@@ -17,6 +17,7 @@ export async function requireAuth(c: Context, next: Next) {
     // Ajoute les données user au contexte
     c.set('userId', decoded.userId)
     c.set('userEmail', decoded.email)
+    //c.set('userName', decoded.email.split('@')[0]) // Extraire le nom d'utilisateur à partir de l'email
     
     await next()
   } catch (error) {
