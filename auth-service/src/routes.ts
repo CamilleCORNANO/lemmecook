@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { signUp, signIn, getMe } from 'controllers/controllerAuth'
+import { signUp, signIn, getMe } from './controllers/controllerAuth.ts'
 
 const auth = new Hono()
 

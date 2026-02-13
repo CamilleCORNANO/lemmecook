@@ -7,12 +7,11 @@ const auth = new Hono()
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
 
-// Inscription
+
 auth.post('/sign-up', async (c) => {
   try {
     const { email, password, name } = await c.req.json()
 
-    // Validation
     if (!email || !password || !name) {
       return c.json({ error: 'Tous les champs sont requis' }, 400)
     }
@@ -20,16 +19,13 @@ auth.post('/sign-up', async (c) => {
     const db = connectDB()
     const users = (await db).collection('users')
 
-    // Vérifie si l'utilisateur existe déjà
     const existingUser = await users.findOne({ email })
     if (existingUser) {
       return c.json({ error: 'Email déjà utilisé' }, 400)
     }
 
-    // Hash du mot de passe
     const hashedPassword = await bcrypt.hash(password, 10)
 
-    // Créer l'utilisateur
     const result = await users.insertOne({
       email,
       password: hashedPassword,
@@ -37,7 +33,6 @@ auth.post('/sign-up', async (c) => {
       createdAt: new Date(),
     })
 
-    // Générer le JWT
     const token = jwt.sign(
       { userId: result.insertedId, email },
       JWT_SECRET,
@@ -55,7 +50,6 @@ auth.post('/sign-up', async (c) => {
   }
 })
 
-// Connexion
 auth.post('/sign-in', async (c) => {
   try {
     const { email, password } = await c.req.json()
@@ -67,19 +61,16 @@ auth.post('/sign-in', async (c) => {
     const db = connectDB()
     const users = (await db).collection('users')
 
-    // Trouve l'utilisateur
     const user = await users.findOne({ email })
     if (!user) {
       return c.json({ error: 'Email ou mot de passe incorrect' }, 401)
     }
 
-    // Vérifie le mot de passe
     const validPassword = await bcrypt.compare(password, user.password)
     if (!validPassword) {
       return c.json({ error: 'Email ou mot de passe incorrect' }, 401)
     }
 
-    // Générer le JWT
     const token = jwt.sign(
       { userId: user._id, email: user.email },
       JWT_SECRET,
@@ -97,7 +88,6 @@ auth.post('/sign-in', async (c) => {
   }
 })
 
-// Récupérer l'utilisateur actuel
 auth.get('/me', async (c) => {
   try {
     const authHeader = c.req.header('Authorization')

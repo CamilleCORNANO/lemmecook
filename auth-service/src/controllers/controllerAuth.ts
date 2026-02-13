@@ -1,4 +1,4 @@
-import { Context } from 'hono'
+import type { Context } from 'hono'
 import { connectDB } from '../models/database.ts'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
@@ -14,7 +14,7 @@ export async function signUp(c: Context) {
       return c.json({ error: 'Tous les champs sont requis' }, 400)
     }
 
-    const db = connectDB()
+    const db = await connectDB()
     const users = db.collection('users')
 
     // Vérifie si l'utilisateur existe déjà
@@ -60,7 +60,7 @@ export async function signIn(c: Context) {
       return c.json({ error: 'Email et mot de passe requis' }, 400)
     }
 
-    const db = connectDB()
+    const db = await connectDB()
     const users = db.collection('users')
 
     // Trouve l'utilisateur
@@ -104,7 +104,7 @@ export async function getMe(c: Context) {
     const decoded = jwt.verify(token, JWT_SECRET) as { userId: string, email: string }
 
     const db = connectDB()
-    const users = db.collection('users')
+    const users = (await db).collection('users')
     const user = await users.findOne({ email: decoded.email })
 
     if (!user) {
