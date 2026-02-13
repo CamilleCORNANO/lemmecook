@@ -10,11 +10,12 @@ type Variables = {
   userId: string
   userEmail: string
 }
+const corsOrigins = process.env.CORS_ORIGINS?.split(',') || ['http://localhost:3000']
 
 const app = new Hono<{ Variables: Variables }>()
 
 app.use('*', cors({
-  origin: ['http://localhost:3000', 'http://localhost:5173'],
+  origin: corsOrigins,
   credentials: true,
 }))
 
