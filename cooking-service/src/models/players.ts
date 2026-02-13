@@ -3,6 +3,7 @@ import { ObjectId } from 'mongodb'
 
 export interface Player {
     _id?: ObjectId,
+    userId: string,
     name: string,
     ingredients: string[],
     recipes: string[],

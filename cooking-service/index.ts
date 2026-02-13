@@ -12,3 +12,9 @@ app.use('*', cors({
   origin: ['http://localhost:3001', 'http://localhost:5173'],
   credentials: true,
 }))
+
+serve({ fetch: app.fetch, port: 3001 }, (info) => {
+  console.log(`✅ Serveur sur http://localhost:${info.port}`)
+})
+
+app.route('/api', Routes)

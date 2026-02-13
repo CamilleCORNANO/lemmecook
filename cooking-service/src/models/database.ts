@@ -1,8 +1,5 @@
 import { MongoClient, Db } from 'mongodb'
 
-
-
-
 const url = process.env.MONGO_URL || `mongodb://localhost:${process.env.MONGO_PORT || 27017}`
 const urlLocal = `mongodb://localhost:${process.env.MONGO_PORT || 27017}`
 
@@ -20,6 +17,8 @@ export async function connectDB() {
     throw error
   }
 }
+
+
 
 
 export async function connectDBDebug() {
