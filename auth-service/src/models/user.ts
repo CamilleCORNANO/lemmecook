@@ -5,5 +5,6 @@ export interface User {
   email: string
   password: string 
   name: string
+  saves: ObjectId[]  // Références aux saves de l'utilisateur
   createdAt: Date
 }

@@ -18,6 +18,7 @@ export const GetIngredientsById = async (c: Context) => {
     return c.json(ingredient)
 }   
 
+//ne sert à rien, à supprimer après les tests
 export async function createIngredient(c: Context) {
   try {
     const { name, description, category, unit } = await c.req.json()
