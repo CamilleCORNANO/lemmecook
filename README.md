@@ -3,6 +3,53 @@
 ## Autrice du MD
 Camille (Claude)
 
+## Lancement du projet
+### 1. Configuration de l'environnement
+
+Créez un fichier `.env` à la racine du projet :
+
+```env
+# MongoDB Credentials
+MONGODB_INITDB_ROOT_USERNAME=admin
+MONGODB_INITDB_ROOT_PASSWORD=password
+MONGO_PORT=27017
+
+# JWT Configuration
+JWT_SECRET=your-secret-key-here
+```
+
+### 2. Lancer l'application
+
+```powershell
+# Démarrer tous les services
+docker-compose up -d
+
+# Vérifier les services
+docker ps
+
+# Accéder à l'application
+# Frontend: http://localhost:5173
+# Auth API: http://localhost:3000
+# Cooking API: http://localhost:3001
+# MongoDB Admin: http://localhost:8081
+```
+
+### 3. Arrêter l'application
+
+```powershell
+docker-compose down
+```
+
+### 4. Reconstruire après modifications
+
+```powershell
+docker-compose up --build -d
+```
+
+---
+
+
+
 ## Architecture
 
 j'ai bossé sur deux services :
