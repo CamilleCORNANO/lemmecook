@@ -2,9 +2,9 @@ import 'dotenv/config'
 import { Hono } from 'hono'
 import { serve } from '@hono/node-server'
 import { cors } from 'hono/cors'
-import { connectDB, connectDBDebug } from './src/models/database.ts'
-import authRoutes from './src/routes.ts'
-import { requireAuth } from './src/middlewares/middlewareAuth.ts'
+import { connectDB, connectDBDebug } from './src/models/database.js'
+import authRoutes from './src/routes.js'
+import { requireAuth } from './src/middlewares/middlewareAuth.js'
 
 type Variables = {
   userId: string
@@ -22,7 +22,7 @@ app.use('*', cors({
 app.route('/api/auth', authRoutes)
 
 app.get('/api/protected', requireAuth, async (c) => {
-  const userId = c.get('userName')
+  const userId = c.get('userId')
   const userEmail = c.get('userEmail')
   
   return c.json({ 

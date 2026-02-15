@@ -4,7 +4,7 @@ canvas {
 
 @font-face {
   font-family: pixel-font;
-  src: url(./fonts/Daydream\ DEMO.otf);
+  src: url(/fonts/Daydream\ DEMO.otf);
 }
 * {
   font-family: "pixel-font";

@@ -4,13 +4,13 @@ import { Assets, Texture } from 'pixi.js'
 
 function Food({ ingredient, spriteRef, isColliding, addToCurrentRecipe, position }: { ingredient: Ingredient; spriteRef: any; isColliding: boolean; addToCurrentRecipe: (ingredient: Ingredient) => void; position: { x: number; y: number } }) {
     const [texture, setTexture] = useState(Texture.EMPTY)
-    const localSpriteRef = useRef(null)
+    const localSpriteRef = useRef<any>(null)
     
-    const onDragMove = useCallback((event) => {
+    const onDragMove = useCallback((event: any) => {
         if (localSpriteRef.current?.dragging) {
-            const newPosition = localSpriteRef.current.data.getLocalPosition(localSpriteRef.current.parent);
-            localSpriteRef.current.x = newPosition.x;
-            localSpriteRef.current.y = newPosition.y;
+            const newPosition = (localSpriteRef.current as any).data.getLocalPosition((localSpriteRef.current as any).parent);
+            (localSpriteRef.current as any).x = newPosition.x;
+            (localSpriteRef.current as any).y = newPosition.y;
         }
     }, [])
 
@@ -40,15 +40,15 @@ function Food({ ingredient, spriteRef, isColliding, addToCurrentRecipe, position
         }
     }, [texture]);
 
-    const onDragStart = (event) => {
-        localSpriteRef.current.data = event.data;
-        localSpriteRef.current.dragging = true;
+    const onDragStart = (event: any) => {
+        (localSpriteRef.current as any).data = event.data;
+        (localSpriteRef.current as any).dragging = true;
     }
-    const onDragEnd = useCallback((event) => {
-        localSpriteRef.current.dragging = false;
-        localSpriteRef.current.data = null;
-        localSpriteRef.current.x = position.x;
-        localSpriteRef.current.y = position.y;
+    const onDragEnd = useCallback((event: any) => {
+        (localSpriteRef.current as any).dragging = false;
+        (localSpriteRef.current as any).data = null;
+        (localSpriteRef.current as any).x = position.x;
+        (localSpriteRef.current as any).y = position.y;
         if (isColliding) {
             addToCurrentRecipe(ingredient)
         }

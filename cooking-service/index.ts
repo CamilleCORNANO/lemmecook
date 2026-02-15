@@ -2,13 +2,13 @@ import 'dotenv/config'
 import { Hono } from 'hono'
 import { serve } from '@hono/node-server'
 import { cors } from 'hono/cors'
-import { connectDB } from './database.ts'
+import { connectDB } from './src/database.js'
 
 // Import des routes
-import recipeRoutes from './routes/recipesRoutes'
-import ingredientRoutes from './routes/ingredientsRoutes'
-import playerRoutes from './routes/playerRoutes'
-import saveRoutes from './routes/savesRoutes'
+import recipeRoutes from './src/routes/recipesRouter.js'
+import ingredientRoutes from './src/routes/ingredientsRouter.js'
+import playerRoutes from './src/routes/playerRouter.js'
+import saveRoutes from './src/routes/savesRouter.js'
 
 const app = new Hono()
 
@@ -31,22 +31,17 @@ app.route('/api/saves', saveRoutes)
 const port = 3001
 
 async function startServer() {
-  await connectDB()
-  
-  // Crée le serveur avec l'adaptateur Hono
-  const server = createAdaptorServer({
-    fetch: app.fetch
-  })
-  
-  // Attache WebSocket
-  setupWebSocketServer(server)
-  
-  // Démarre
-  server.listen(port, () => {
-    console.log(`✅ HTTP + WebSocket sur http://localhost:${port}`)
-  })
+  try {
+    await connectDB()
+    
+    // Démarre le serveur
+    serve({ fetch: app.fetch, port }, (info) => {
+      console.log(`✅ Serveur sur http://localhost:${info.port}`)
+    })
+  } catch (error) {
+    console.error('Erreur au démarrage:', error)
+    process.exit(1)
+  }
 }
 
 startServer()
-
-app.route('/api', Routes)

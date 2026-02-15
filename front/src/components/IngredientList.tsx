@@ -5,12 +5,12 @@ import Food from '../sprites/Food';
 
 const IngredientList = ( {addToCurrentRecipe, ingredientRefs, collidingIndices}: {addToCurrentRecipe: (ingredient: Ingredient) => void, ingredientRefs: RefObject<any[]>, collidingIndices: Set<number>} ) => {
     const ingredients = Object.values(Ingredients)
-    const ingredientListRef = useRef(null)
+    const ingredientListRef = useRef<any>(null)
     
     return (
         <pixiContainer >
             <pixiGraphics
-                draw={(g) => {
+                draw={(g: any) => {
                 g.rect(0, 0, 250, window.innerHeight );
                 g.fill('rgba(0, 0, 0)');
                 }}

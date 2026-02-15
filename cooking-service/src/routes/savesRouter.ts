@@ -1,13 +1,13 @@
 import { Hono } from 'hono'
-import { requireAuth } from '../middlewares/auth'
+import { requireAuth } from '../middlewares/auth.js'
 import { 
     getUserSaves, 
     getSaveBySlot,
     createSave,
     updateSave,
     deleteSave
-} from '../controllers/controllerSaves'
-import { saveUser } from '../controllers/controllerPlayers'
+} from '../controllers/controllerSaves.js'
+import { saveUser } from '../controllers/controllerPlayers.js'
 const saveRoute = new Hono()
 
 // Routes protégées

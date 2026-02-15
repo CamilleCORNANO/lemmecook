@@ -1,5 +1,5 @@
 import { Context } from 'hono'
-import { getDB } from '../database.ts'
+import { getDB } from '../database.js'
 import { ObjectId } from 'mongodb'
 
 // Récupérer toutes les sauvegardes du joueur connecté

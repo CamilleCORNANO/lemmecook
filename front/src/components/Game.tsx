@@ -13,18 +13,18 @@ import BookToggle from '../sprites/BookToggle';
 import IngredientList from './IngredientList';
 
 function Game() {
-  const ingredientRefs = useRef([])
-  const potRef = useRef(null)
+  const ingredientRefs = useRef<any[]>([])
+  const potRef = useRef<any>(null)
   const ticker = Ticker.shared;
-  const [collision, setCollision] = useState({detected: false, ingredient: null})
-  const [currentRecipe, setCurrentRecipe] = useState([])
-  const [bgTexture, setBgTexture] = useState(null)
-  const bgSpriteRef = useRef(null)
+  const [collision, setCollision] = useState<any>({detected: false, ingredient: null})
+  const [currentRecipe, setCurrentRecipe] = useState<Ingredient[]>([])
+  const [bgTexture, setBgTexture] = useState<any>(null)
+  const bgSpriteRef = useRef<any>(null)
   const [isCooking, setIsCooking] = useState(false)
   const [recipeResult, setRecipeResult] = useState('')
   const [showResult, setShowResult] = useState(false)
   const [showBook, setShowBook] = useState(false)
-  const [collidingIndices, setCollidingIndices] = useState(new Set())
+  const [collidingIndices, setCollidingIndices] = useState<Set<number>>(new Set())
 
 
 
@@ -38,11 +38,11 @@ function Game() {
     if (bgSpriteRef.current) {
       const blurFilter = new BlurFilter();
       blurFilter.blur = 10;
-      bgSpriteRef.current.filters = [blurFilter];
+      (bgSpriteRef.current as any).filters = [blurFilter];
     }
   }, [bgTexture])
 
-  const checkCollision  = useCallback((object1, object2) => {
+  const checkCollision  = useCallback((object1: any, object2: any) => {
     const bounds1 = object1.getBounds();
     const bounds2 = object2.getBounds();
 
@@ -55,7 +55,7 @@ function Game() {
   }, [])
   
   const addToCurrentRecipe = useCallback((ingredient: Ingredient) => {
-    setCurrentRecipe(prev => {
+    setCurrentRecipe((prev: Ingredient[]) => {
       if (prev.length >= 3 || isCooking) return prev
       return [...prev, ingredient]
     })
@@ -85,8 +85,8 @@ function Game() {
     const handleTick = () => {
       if (ingredientRefs.current && potRef.current) {
           let collisionDetected = false;
-          const newCollidingIndices = new Set();
-          ingredientRefs.current.forEach((ingredientRef, index) => {
+          const newCollidingIndices = new Set<number>();
+          ingredientRefs.current.forEach((ingredientRef: any, index: number) => {
             if (ingredientRef && checkCollision(ingredientRef, potRef.current)) {
                 collisionDetected = true;
                 newCollidingIndices.add(index);
@@ -121,7 +121,7 @@ function Game() {
       >
       <CookingPot spriteRef={potRef} hover={collision.detected} isCooking={isCooking}/>
       <pixiContainer>
-          {currentRecipe.map((ingredient, index) => (
+          {currentRecipe.map((ingredient: Ingredient, index: number) => (
           <pixiSprite
               key={index}
               texture={Assets.get(ingredient.name)}

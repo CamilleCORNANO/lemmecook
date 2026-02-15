@@ -30,12 +30,12 @@ extend({
 });
 
 function App() {
-  const app = useRef(null)
+  const app = useRef<any>(null)
 
   useEffect(() => {
     window.addEventListener('resize', () => {
       if (app.current) {
-        app.current.getApplication().renderer.resize(window.innerWidth, window.innerHeight);
+        (app.current as any).getApplication().renderer.resize(window.innerWidth, window.innerHeight);
       }
     })
   })

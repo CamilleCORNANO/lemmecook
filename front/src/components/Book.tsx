@@ -5,10 +5,10 @@ import '@pixi/layout';
 
 
 const Book = () => {
-    const [recipes, setRecipes] = useState(Recipes)
-    const [bookLeftSprite, setBookLeftSprite] = useState(null)
-    const [bookRightSprite, setBookRightSprite] = useState(null)
-    const [bookCoverSprite, setBookCoverSprite] = useState(null)
+    const [recipes, setRecipes] = useState<any>(Recipes)
+    const [bookLeftSprite, setBookLeftSprite] = useState<any>(null)
+    const [bookRightSprite, setBookRightSprite] = useState<any>(null)
+    const [bookCoverSprite, setBookCoverSprite] = useState<any>(null)
     const [ingredientTextures, setIngredientTextures] = useState({} as Record<string, any>)
 
     useEffect(() => {
