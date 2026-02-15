@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@pixi/layout':
+        specifier: ^3.2.0
+        version: 3.2.0(@types/react@19.2.13)(pixi.js@8.16.0)(react@19.2.4)(yoga-layout@3.2.1)
       '@pixi/react':
         specifier: ^8.0.5
         version: 8.0.5(@types/react@19.2.13)(pixi.js@8.16.0)(react@19.2.4)
@@ -377,6 +380,12 @@ packages:
 
   '@pixi/constants@7.4.3':
     resolution: {integrity: sha512-QGmwJUNQy/vVEHzL6VGQvnwawLZ1wceZMI8HwJAT4/I2uAzbBeFDdmCS8WsTpSWLZjF/DszDc1D8BFp4pVJ5UQ==}
+
+  '@pixi/layout@3.2.0':
+    resolution: {integrity: sha512-7TtDLHfaF65sTnYjrvRNqNJSQHMH109b04RtNgoy//BjR+pKWFUCgDMnUhs13fdNM0AkGccQW3UqCdylHuGvbA==}
+    peerDependencies:
+      pixi.js: ^8
+      yoga-layout: ^3
 
   '@pixi/react@8.0.5':
     resolution: {integrity: sha512-Z1VRdnv9Gh+lTLzNKjpS7GaTNDjUxRVJNtIdtK2i0sCpigvjx5mvJ72EPLhBFgepB6j3ZCkL0YBb6BqgTGbhGA==}
@@ -1162,6 +1171,9 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
+  yoga-layout@3.2.1:
+    resolution: {integrity: sha512-0LPOt3AxKqMdFBZA3HBAt/t/8vIKq7VaQYbuA8WxCgung+p9TVyKRYdpvCb80HcdTN2NkbIKbhNwKUfm3tQywQ==}
+
   zod-validation-error@4.0.2:
     resolution: {integrity: sha512-Q6/nZLe6jxuU80qb/4uJ4t5v2VEZ44lzQjPDhYJNztRQ4wyWc6VF3D3Kb/fAuPetZQnhS3hnajCf9CsWesghLQ==}
     engines: {node: '>=18.0.0'}
@@ -1442,6 +1454,16 @@ snapshots:
   '@pixi/colord@2.9.6': {}
 
   '@pixi/constants@7.4.3': {}
+
+  '@pixi/layout@3.2.0(@types/react@19.2.13)(pixi.js@8.16.0)(react@19.2.4)(yoga-layout@3.2.1)':
+    dependencies:
+      pixi.js: 8.16.0
+      yoga-layout: 3.2.1
+    optionalDependencies:
+      '@pixi/react': 8.0.5(@types/react@19.2.13)(pixi.js@8.16.0)(react@19.2.4)
+    transitivePeerDependencies:
+      - '@types/react'
+      - react
 
   '@pixi/react@8.0.5(@types/react@19.2.13)(pixi.js@8.16.0)(react@19.2.4)':
     dependencies:
@@ -2196,6 +2218,8 @@ snapshots:
   yallist@3.1.1: {}
 
   yocto-queue@0.1.0: {}
+
+  yoga-layout@3.2.1: {}
 
   zod-validation-error@4.0.2(zod@4.3.6):
     dependencies:

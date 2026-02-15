@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 // import { Ingredient } from '../lib/Objects'
 import {  Assets, Texture } from 'pixi.js'
-import { } from '@pixi/react';
 
 const CookingPot = ({ spriteRef, hover, isCooking }: { spriteRef: any, hover: boolean, isCooking: boolean }) => {
 

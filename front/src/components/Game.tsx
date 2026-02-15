@@ -6,29 +6,26 @@ import {
 import Food from '../sprites/Food';
 import { Ingredient } from '../lib/Objects';
 import CookingPot from '../sprites/CookingPot';
-import { useEffect, useRef, useState } from 'react';
-import { checkRecipeMatch } from '../lib/CookingFunctions';
+import { useEffect, useRef, useState, useCallback } from 'react';
+import { checkRecipeMatch, Ingredients } from '../lib/CookingFunctions';
 import Book from './Book';
-const Ingredients = [
-    new Ingredient('Tomato', './sprites/Tomato.png'),
-    new Ingredient('Chicken', './sprites/Chicken.png'),
-    new Ingredient('Cheese', './sprites/Cheese.png'),
-    new Ingredient('Eggs', './sprites/Eggs.png'),
-]
+import BookToggle from '../sprites/BookToggle';
+import IngredientList from './IngredientList';
 
 function Game() {
   const ingredientRefs = useRef([])
   const potRef = useRef(null)
-  const ingredientListRef = useRef(null)
   const ticker = Ticker.shared;
   const [collision, setCollision] = useState({detected: false, ingredient: null})
   const [currentRecipe, setCurrentRecipe] = useState([])
-  const [collidingIndices, setCollidingIndices] = useState(new Set())
   const [bgTexture, setBgTexture] = useState(null)
   const bgSpriteRef = useRef(null)
   const [isCooking, setIsCooking] = useState(false)
   const [recipeResult, setRecipeResult] = useState('')
   const [showResult, setShowResult] = useState(false)
+  const [showBook, setShowBook] = useState(false)
+  const [collidingIndices, setCollidingIndices] = useState(new Set())
+
 
 
   useEffect(() => {
@@ -45,10 +42,9 @@ function Game() {
     }
   }, [bgTexture])
 
-  const checkCollision  = (object1, object2) => {
+  const checkCollision  = useCallback((object1, object2) => {
     const bounds1 = object1.getBounds();
     const bounds2 = object2.getBounds();
-
 
     return (
       bounds1.x < bounds2.x + bounds2.width &&
@@ -56,12 +52,14 @@ function Game() {
       bounds1.y < bounds2.y + bounds2.height &&
       bounds1.y + bounds1.height > bounds2.y
     );
-  }
+  }, [])
   
-  const addToCurrentRecipe = (ingredient: Ingredient) => {
-    if (currentRecipe.length >= 3 || isCooking) return
-    setCurrentRecipe([...currentRecipe, ingredient])
-  }
+  const addToCurrentRecipe = useCallback((ingredient: Ingredient) => {
+    setCurrentRecipe(prev => {
+      if (prev.length >= 3 || isCooking) return prev
+      return [...prev, ingredient]
+    })
+  }, [isCooking])
 
   const handleCook = () => {
     if (currentRecipe.length < 2 || isCooking) return
@@ -84,12 +82,12 @@ function Game() {
     }, 1000)
   }
   useEffect(() => {
-    ticker.add(() => {
+    const handleTick = () => {
       if (ingredientRefs.current && potRef.current) {
           let collisionDetected = false;
           const newCollidingIndices = new Set();
           ingredientRefs.current.forEach((ingredientRef, index) => {
-            if (checkCollision(ingredientRef, potRef.current)) {
+            if (ingredientRef && checkCollision(ingredientRef, potRef.current)) {
                 collisionDetected = true;
                 newCollidingIndices.add(index);
             }
@@ -97,19 +95,25 @@ function Game() {
           setCollision({detected: collisionDetected, ingredient: collisionDetected ? ingredientRefs.current[0] : null});
           setCollidingIndices(newCollidingIndices);
       }
-    });
+    };
+    
+    ticker.add(handleTick);
     ticker.start();
+    
+    return () => {
+      ticker.remove(handleTick);
+    }
   }, [ticker]);
 
   return (
     <>
       {bgTexture && (
-      <pixiSprite 
-      ref={bgSpriteRef} 
-      texture={bgTexture} 
-      width={window.innerWidth} 
-      height={window.innerHeight} 
-      />
+        <pixiSprite 
+          ref={bgSpriteRef} 
+          texture={bgTexture} 
+          width={window.innerWidth} 
+          height={window.innerHeight} 
+        />
       )}
       <pixiContainer
       x={(window.innerWidth +250) / 2}
@@ -166,30 +170,10 @@ function Game() {
           </pixiContainer>
       )} 
       </pixiContainer>
-      <pixiContainer >
-      <pixiGraphics
-          draw={(g) => {
-          g.rect(0, 0, 250, window.innerHeight );
-          g.fill('rgba(0, 0, 0)');
-          }}
-      />
-      {
-          Ingredients.map((ingredient, index) => (
-          <pixiContainer key={ingredient.name} ref={ingredientListRef}>
-              <Food ingredient={ingredient} isColliding={collidingIndices.has(index)}  spriteRef={(ref) => ingredientRefs.current[index] = ref} addToCurrentRecipe={addToCurrentRecipe} position={{ x: index%2 === 0 ? 75 : 175, y: 100 * (Math.floor(index / 2) + 1) }} />
-              <pixiText
-              text={ingredient.name}
-              anchor={0.5}
-              x={index%2 === 0 ? 75 : 175}
-              y={100 * (Math.floor(index / 2) + 1) + 50}
-              scale={0.5}
-              style={{ fill: 'white', fontSize: 18, fontFamily: 'pixel-font'}}
-              />
-          </pixiContainer>
-          ))
-      }
-      </pixiContainer>
-      {/* <Book /> */}
+      <IngredientList addToCurrentRecipe={addToCurrentRecipe} ingredientRefs={ingredientRefs} collidingIndices={collidingIndices}/>
+      <BookToggle BookToggled={showBook} setBookToggled={setShowBook  }/>
+      {showBook && <Book />}
+      
     </>
   )
 }

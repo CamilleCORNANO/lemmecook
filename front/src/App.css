@@ -9,3 +9,7 @@ canvas {
 * {
   font-family: "pixel-font";
 }
+
+html {
+  overflow: hidden;
+}

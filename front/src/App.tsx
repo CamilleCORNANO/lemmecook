@@ -13,11 +13,17 @@ import {
 } from 'pixi.js';
 import { useRef, useEffect } from 'react';
 import Game from './components/Game';
+import { LayoutContainer, LayoutSprite, LayoutText } from '@pixi/layout/components';
+import '@pixi/layout/react';
+
 
 extend({
     Container,
     Graphics,
     Sprite,
+    LayoutContainer,
+    LayoutSprite,
+    LayoutText,
     AnimatedSprite,
     Ticker,
     Text

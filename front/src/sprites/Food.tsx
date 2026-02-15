@@ -1,25 +1,28 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback, memo } from 'react'
 import { Ingredient } from '../lib/Objects'
 import { Assets, Texture } from 'pixi.js'
 
-export default function Food({ ingredient, spriteRef, isColliding, addToCurrentRecipe, position }: { ingredient: Ingredient; spriteRef: any; isColliding: boolean; addToCurrentRecipe: (ingredient: Ingredient) => void; position: { x: number; y: number } }) {
+function Food({ ingredient, spriteRef, isColliding, addToCurrentRecipe, position }: { ingredient: Ingredient; spriteRef: any; isColliding: boolean; addToCurrentRecipe: (ingredient: Ingredient) => void; position: { x: number; y: number } }) {
     const [texture, setTexture] = useState(Texture.EMPTY)
     const localSpriteRef = useRef(null)
     
-    const onDragMove = (event) => {
-        if (localSpriteRef.current.dragging) {
+    const onDragMove = useCallback((event) => {
+        if (localSpriteRef.current?.dragging) {
             const newPosition = localSpriteRef.current.data.getLocalPosition(localSpriteRef.current.parent);
             localSpriteRef.current.x = newPosition.x;
             localSpriteRef.current.y = newPosition.y;
         }
-    } 
+    }, [])
 
     useEffect(() => {
         window.addEventListener('pointermove', onDragMove);
         if (localSpriteRef.current && spriteRef) {
             spriteRef(localSpriteRef.current);
         }
-    }, [spriteRef]);
+        return () => {
+            window.removeEventListener('pointermove', onDragMove);
+        }
+    }, [spriteRef, onDragMove]);
 
     useEffect(() => {
         if (texture === Texture.EMPTY) {
@@ -41,7 +44,7 @@ export default function Food({ ingredient, spriteRef, isColliding, addToCurrentR
         localSpriteRef.current.data = event.data;
         localSpriteRef.current.dragging = true;
     }
-    const onDragEnd = (event) => {
+    const onDragEnd = useCallback((event) => {
         localSpriteRef.current.dragging = false;
         localSpriteRef.current.data = null;
         localSpriteRef.current.x = position.x;
@@ -49,7 +52,7 @@ export default function Food({ ingredient, spriteRef, isColliding, addToCurrentR
         if (isColliding) {
             addToCurrentRecipe(ingredient)
         }
-    } 
+    }, [isColliding, addToCurrentRecipe, ingredient, position]) 
   return (
         <pixiSprite
             ref={localSpriteRef}
@@ -57,10 +60,12 @@ export default function Food({ ingredient, spriteRef, isColliding, addToCurrentR
             eventMode={'static'}
             onPointerDown={onDragStart}
             onPointerUp={onDragEnd}
-            scale={3}
             texture={texture}
+            scale={3}
             x={position.x}
             y={position.y} 
         />
   )
 }
+
+export default memo(Food)
