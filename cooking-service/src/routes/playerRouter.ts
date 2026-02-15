@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { requireAuth } from '../middlewares/auth'
+import { requireAuth } from '../middlewares/auth.js'
 import { 
   createPlayer,
   getPlayeryUserId,
@@ -9,7 +9,7 @@ import {
   updateIngredients, 
   getWallet, 
   updateWallet 
-} from '../controllers/controllerPlayers'
+} from '../controllers/controllerPlayers.js'
 
 const player = new Hono()
 

@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb'
-import { Recipe } from './recipes'
-import { Ingredient } from './ingredients'
+import { Recipe } from './recipes.js'
+import { Ingredient } from './ingredients.js'
 
 export interface Save {
   _id?: ObjectId

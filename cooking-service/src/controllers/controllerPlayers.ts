@@ -1,7 +1,6 @@
 import type { Context } from 'hono'
-import { getDB } from '../database.ts'
+import { getDB } from '../database.js'
 import { ObjectId } from 'mongodb'
-import { get } from 'axios'
 
 /*
 //ne sert à rien, à supprimer après les tests

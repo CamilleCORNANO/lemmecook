@@ -1,5 +1,5 @@
 import type { Context } from 'hono'
-import { connectDB } from '../models/database.ts'
+import { connectDB } from '../models/database.js'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 

@@ -1,5 +1,5 @@
 import type { Context } from 'hono'
-import { connectDB } from '../database.ts'
+import { connectDB } from '../database.js'
 import { ObjectId } from 'mongodb'
 
 export const GetIngredients = async (c: Context) => {
@@ -52,7 +52,3 @@ export async function createIngredient(c: Context) {
     return c.json({ error: 'Erreur serveur' }, 500)
   }
 }
-
-
-export { GetIngredients as GetAllIngredients } from './controllerIngredients.ts'
-export { GetIngredientsById as GetIngredientById } from './controllerIngredients.ts'

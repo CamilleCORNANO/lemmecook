@@ -15,6 +15,8 @@ services:
       retries: 5
     volumes:
       - mongo_data:/data/db
+    networks:
+      - lemmecook-network
 
   mongo-express:
     image: mongo-express:latest
@@ -28,6 +30,58 @@ services:
     depends_on:
       mongodb:
         condition: service_healthy
+    networks:
+      - lemmecook-network
+
+  auth-service:
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGODB_URI=mongodb://${MONGODB_INITDB_ROOT_USERNAME}:${MONGODB_INITDB_ROOT_PASSWORD}@mongodb:27017/lemmecook?authSource=admin
+      - JWT_SECRET=${JWT_SECRET}
+      - CORS_ORIGINS=http://localhost:5173,http://localhost:3001
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - lemmecook-network
+
+  cooking-service:
+    build:
+      context: ./cooking-service
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - MONGODB_URI=mongodb://${MONGODB_INITDB_ROOT_USERNAME}:${MONGODB_INITDB_ROOT_PASSWORD}@mongodb:27017/lemmecook?authSource=admin
+      - CORS_ORIGINS=http://localhost:5173
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - lemmecook-network
+
+  front:
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:3000
+      - VITE_COOKING_API_URL=http://localhost:3001
+    depends_on:
+      - auth-service
+      - cooking-service
+    networks:
+      - lemmecook-network
+
+networks:
+  lemmecook-network:
+    driver: bridge
 
 volumes:
   mongo_data:

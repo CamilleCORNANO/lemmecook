@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { connectDB } from './models/database.ts'
+import { connectDB } from './models/database'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
