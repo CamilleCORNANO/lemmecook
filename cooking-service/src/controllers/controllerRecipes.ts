@@ -1,5 +1,5 @@
 import type { Context } from 'hono'
-import { getDB } from '../models/database.ts'
+import { getDB } from '../database.ts'
 import { ObjectId } from 'mongodb'
 
 export const GetRecipes = async (c: Context) => {
@@ -80,5 +80,35 @@ export async function checkExactMatch(c: Context) {
   } catch (error) {
     console.error('Erreur checkExactMatch:', error)
     return c.json({ error: 'Erreur serveur' }, 500)
+  }
+}
+
+export const sell = async (c: Context) => {
+  try {
+    const { playerId, recipeId } = await c.req.json()
+    if (!playerId || !recipeId) {
+      return c.json({ error: 'Données manquantes' }, 400)
+    } 
+    const db = getDB()
+    const recipe = await db.collection('recipes').findOne({ _id: new ObjectId(recipeId) }) 
+    if (!recipe) {
+      return c.json({ error: 'Recette non trouvée' }, 404)
+    } 
+    const result = await db.collection('players').findOneAndUpdate(
+      { _id: new ObjectId(playerId) },
+      { $inc: { money: recipe.priceToSell } },
+      { returnDocument: 'after' }
+    ) 
+    if (!result) {
+      return c.json({ error: 'Joueur non trouvé' }, 404)
+    }
+    return c.json({ 
+      success: true,
+      player: result,
+      message: `Recette vendue pour ${recipe.priceToSell} euros`
+    })
+  } catch (error) {
+    console.error('Erreur sell:', error)
+    return c.json({ error: 'Erreur lors de la vente de la recette' }, 500)
   }
 }

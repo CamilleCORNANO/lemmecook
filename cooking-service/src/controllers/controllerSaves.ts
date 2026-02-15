@@ -1,15 +1,16 @@
 import { Context } from 'hono'
-import { getDB } from '../models/database.ts'
+import { getDB } from '../database.ts'
 import { ObjectId } from 'mongodb'
 
+// Récupérer toutes les sauvegardes du joueur connecté
 export const getUserSaves = async (c: Context) => {
   try {
-    const userId = c.req.param('userId')
+    const userId = c.get('userId')  // ← Du token JWT
     
     const db = getDB()
     const saves = await db.collection('saves')
-      .find({ userId: new ObjectId(userId) })
-      .sort({ lastSaved: -1 })  // Plus récentes en premier
+      .find({ userId })
+      .sort({ lastSaved: -1 })
       .toArray()
 
     return c.json({ 
@@ -18,6 +19,33 @@ export const getUserSaves = async (c: Context) => {
     })
   } catch (error) {
     console.error('Erreur getUserSaves:', error)
+    return c.json({ error: 'Erreur serveur' }, 500)
+  }
+}
+
+// Récupérer UNE sauvegarde par numéro de slot
+export const getSaveBySlot = async (c: Context) => {
+  try {
+    const userId = c.get('userId')  // ← Du token JWT
+    const slotNumber = parseInt(c.req.param('slotNumber'))
+
+    if (isNaN(slotNumber)) {
+      return c.json({ error: 'Numéro de slot invalide' }, 400)
+    }
+
+    const db = getDB()
+    const save = await db.collection('saves').findOne({
+      userId,
+      slotNumber
+    })
+
+    if (!save) {
+      return c.json({ error: 'Sauvegarde non trouvée' }, 404)
+    }
+
+    return c.json({ save })
+  } catch (error) {
+    console.error('Erreur getSaveBySlot:', error)
     return c.json({ error: 'Erreur serveur' }, 500)
   }
 }

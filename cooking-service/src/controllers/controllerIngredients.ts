@@ -1,5 +1,5 @@
 import type { Context } from 'hono'
-import { connectDB } from '../models/database.ts'
+import { connectDB } from '../database.ts'
 import { ObjectId } from 'mongodb'
 
 export const GetIngredients = async (c: Context) => {

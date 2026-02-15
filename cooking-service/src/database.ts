@@ -18,9 +18,11 @@ export async function connectDB() {
   }
 }
 
+export async function fillUpDB() {
 
 
 
+}
 export async function connectDBDebug() {
   try {
     console.log('🔌 Création du client MongoDB...')
@@ -32,10 +34,10 @@ export async function connectDBDebug() {
     console.log('🔌 Sélection de la base de données...')
     db = client.db(process.env.MONGO_DB || 'lemmecook')
     
-    console.log('✅ Connecté à MongoDB')
+    console.log(' Connecté à MongoDB')
     return db
   } catch (error) {
-    console.error('❌ Erreur détaillée MongoDB:', error)
+    console.error(' Erreur détaillée MongoDB:', error)
     console.error('Stack:', (error as Error).stack)
     throw error
   }
@@ -47,3 +49,5 @@ export function getDB() {
   }
   return db
 }
+
+

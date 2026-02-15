@@ -1,5 +1,5 @@
 import type { Context } from 'hono'
-import { getDB } from '../models/database.ts'
+import { getDB } from '../database.ts'
 import { ObjectId } from 'mongodb'
 import { get } from 'axios'
 
@@ -40,7 +40,7 @@ export const getPlayeryUserId = async (c: Context) => {
     }
 }
 
-export const save = async (c: Context) => {
+export const saveUser = async (c: Context) => {
   try {
     const playerId = c.req.param('id')
     const { name, ingredients, recipes } = await c.req.json()
@@ -161,3 +161,94 @@ export const getIngredients = async (c: Context) => {
     console.error('Erreur getIngredients:', error)
     return c.json({ error: 'Erreur lors de la récupération des ingrédients' }, 500) }
 }
+export const addIngredient = async (c: Context) => {
+  try {
+    const playerId = c.req.param('id')
+    const { ingredientId } = await c.req.json()
+    const db = getDB()
+    const result = await db.collection('players').findOneAndUpdate(
+      { _id: new ObjectId(playerId) },
+      { $addToSet: { ingredients: ingredientId } }, // Ajoute l'ingrédient à la liste sans dupliquer
+      { returnDocument: 'after' }
+    )
+    if (!result) {
+      return c.json({ error: 'Joueur non trouvé' }, 404)
+    }
+    return c.json({
+      success: true,
+      player: result,
+      message: 'Ingrédient ajouté'
+    })
+  } catch (error) {
+    console.error('Erreur addIngredient:', error)
+    return c.json({ error: 'Erreur lors de l\'ajout de l\'ingrédient' }, 500)
+  }
+}
+
+export const updateIngredients = async (c: Context) => {
+  try {
+    const playerId = c.req.param('id')
+    const { ingredientIds } = await c.req.json()
+    const db = getDB()
+    const result = await db.collection('players').findOneAndUpdate(
+      { _id: new ObjectId(playerId) },
+      { $set: { ingredients: ingredientIds } }, // Remplace la liste des ingrédients
+      { returnDocument: 'after' }
+    )
+    if (!result) {
+      return c.json({ error: 'Joueur non trouvé' }, 404)
+    }
+    return c.json({
+      success: true,
+      player: result,
+      message: 'Ingrédients mis à jour'
+    })
+  } catch (error) {
+    console.error('Erreur updateIngredients:', error)
+    return c.json({ error: 'Erreur lors de la mise à jour des ingrédients' }, 500)
+  }
+}
+
+
+export const getWallet = async (c: Context) => {
+  try {
+    const playerId = c.req.param('id')
+    const db = getDB()
+    const player = await db.collection('players').findOne({ _id: new ObjectId(playerId) })
+    if (!player) {
+      return c.json({ error: 'Joueur non trouvé' }, 404)
+    } else {
+      return c.json({ 
+        success: true,
+        wallet: player.wallet,
+        message: 'Solde récupéré'
+      })
+    } } catch (error) {
+    console.error('Erreur getWallet:', error)
+    return c.json({ error: 'Erreur lors de la récupération du solde' }, 500) }
+}
+
+export const updateWallet = async (c: Context) => {
+  try {
+    const playerId = c.req.param('id')
+    const { amount } = await c.req.json()
+    const db = getDB()
+    const result = await db.collection('players').findOneAndUpdate(
+      { _id: new ObjectId(playerId) },
+      { $inc: { wallet: amount } }, // Incrémente le solde du joueur
+      { returnDocument: 'after' }
+    )
+    if (!result) {
+      return c.json({ error: 'Joueur non trouvé' }, 404)
+    } else {
+      return c.json({ 
+        success: true,
+        wallet: result.value.wallet,
+        message: 'Solde mis à jour'
+      })
+    } } catch (error) {
+    console.error('Erreur updateWallet:', error)
+    return c.json({ error: 'Erreur lors de la mise à jour du solde' }, 500) } 
+}
+
+
