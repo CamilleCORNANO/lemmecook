@@ -1,7 +1,175 @@
-# lemmecook
-Camille
-Voici notre travail à Eva et à moi, c'est pas fini mais ça devrait etre fonctionnel au moins jusqu'au 16. J'ai implementé l'authentification et le gameplay coté back, donc j'ai divsé ça en deux services, authService et cookingService. 
+# LemmeCook
 
-auth est assez simple, son index prend les login, signin, et apres cooking prend le relais. J'ai un modele d'user qui contient le necessaire pour les créer en base, et la gestion de la connexion BDD dans le modèle. Un middleware pour s'occuper de la verification du token avant d'acceder à du contenu protégé, un controller pour mes routes et des routes qu'on importe dans index. simple.
+## Autrice du MD
+Camille (Claude)
 
-cooking est un peu plus fouilli, j'ai fait de mon mieux pour refacto (claude à fait de son mieux) mais fallait que ça marche avant tout. index.ts n'accepte que les utilisateurs connectés, la seule route publique c'est createPlayer, pour qu'auth puisse créer son joueur. donc j'ai 4 modeles, un controller pour chaque, et un set de routers pour les 4 qui en ont besoin. Donc on a les ingredients, recettes, joueurs, sauvegardes et commandes. Les commandes sont generées aleatoirement parmi les recettes, j'ai pas encore bien complété la monsetisation mais l'idée c'etait que la somme des prix des ingredients font le price to make, qui sera indiqué dans le livre de recettes, et le price to sell est defini par le joueur, avec plus de temps j'aurais pu faire la satisafaction avec une liste de niveaux d'exigeances clients et des scores basés sur le temps, mais bof là. Bref, les utilisateurs ont des slots de sauvegarde, et une sauvegarde = un joueur, 
+## Architecture
+
+j'ai bossé sur deux services :
+- **Auth Service** : Gestion de l'authentification
+- **Cooking Service** : Logique du jeu
+
+---
+
+## Auth Service
+
+### Description
+Service simple d'authentification avec login/signup.
+
+### Structure
+```
+auth-service/
+├── src/
+│   ├── models/
+│   │   └── User.ts          # Modèle utilisateur + connexion DB
+│   ├── middleware/
+│   │   └── auth.ts          # Vérification du token JWT
+│   ├── controllers/
+│   │   └── authController.ts
+│   ├── routes/
+│   │   └── auth.ts
+│   └── index.ts             # Routes login/signup
+```
+
+### Fonctionnalités
+- Inscription (`sign-up`)
+- Connexion (`sign-in`)
+- Génération de tokens JWT
+- Création automatique du joueur dans Cooking Service
+
+---
+
+## Cooking Service
+
+### Description
+Service principal gérant toute la logique du gameplay.
+
+### Structure
+```
+cooking-service/
+├── src/
+│   ├── models/
+│   │   ├── Ingredient.ts
+│   │   ├── Recipe.ts
+│   │   ├── Player.ts
+│   │   ├── Save.ts
+│   │   └── Order.ts
+│   ├── controllers/
+│   │   ├── controllerIngredients.ts
+│   │   ├── controllerRecipes.ts
+│   │   ├── controllerPlayers.ts
+│   │   ├── controllerSaves.ts
+│   │   └── controllerOrders.ts
+│   ├── routes/
+│   │   ├── ingredient.ts
+│   │   ├── recipe.ts
+│   │   ├── player.ts
+│   │   └── save.ts
+│   ├── websocket/
+│   │   └── commandServer.ts
+│   ├── services/
+│   │   └── orderService.ts
+│   └── index.ts
+```
+
+### Authentification
+- **Toutes les routes sont protégées** sauf `POST /players` (création de joueur par Auth Service)
+- Utilise le même secret JWT que Auth Service pour vérifier les tokens
+
+### Fonctionnalités principales
+
+#### 📦 Ingrédients
+- Liste de tous les ingrédients disponibles
+- Détails d'un ingrédient
+
+#### 📖 Recettes
+- Liste de toutes les recettes (livre de recettes)
+- Filtrage des recettes selon les ingrédients du pot
+- Vérification de correspondance exacte (déblocage de recette)
+- Détails d'une recette
+
+#### 👤 Joueurs
+- Création de joueur (appelé par Auth Service)
+- Gestion de l'inventaire d'ingrédients
+- Recettes débloquées
+- Wallet
+
+#### 💾 Sauvegardes
+- **Système de slots** : Plusieurs sauvegardes par utilisateur
+- Chaque sauvegarde = Un joueur distinct
+- Contient :
+  - Recettes débloquées
+  - Inventaire d'ingrédients
+  - Wallet
+  - Progression
+- Les IDs des sauvegardes sont stockés en base
+
+#### 📋 Commandes (temps réel via WebSocket)
+- Génération aléatoire de commandes parmi les recettes
+- Envoi en temps réel au joueur connecté
+- Intervalle : 15 secondes (configurable)
+- Prix de vente défini par le joueur
+
+### Monétisation (en cours)
+- **Price to make** = Somme des prix des ingrédients (affiché dans le livre)
+- **Price to sell** = Défini par le joueur
+- *(Idée future : Système de satisfaction client avec niveaux d'exigence et scores basés sur le temps)*
+
+---
+
+## Technologies
+
+- **Backend** : Hono (TypeScript)
+- **Base de données** : MongoDB
+- **Authentification** : JWT (jsonwebtoken)
+- **Temps réel** : WebSocket (ws)
+- **Hash passwords** : bcryptjs
+
+---
+
+## Routes API
+
+### Auth Service (port 3000)
+```
+POST /api/auth/sign-up     # Inscription
+POST /api/auth/sign-in     # Connexion
+GET  /api/auth/me          # Info utilisateur connecté
+```
+
+### Cooking Service (port 3001)
+```
+# Recettes
+GET  /api/recipes
+GET  /api/recipes/:id
+GET  /api/recipes/filter-by-pot
+POST /api/recipes/check-exact-match
+
+# Ingrédients
+GET  /api/ingredients
+GET  /api/ingredients/:id
+
+# Joueurs (protégé)
+POST /api/players                    # Création (public, pour Auth Service)
+GET  /api/players/recipes            # Mes recettes débloquées
+GET  /api/players/ingredients        # Mon inventaire
+GET  /api/players/wallet             # Mon wallet
+POST /api/players/update-ingredients
+POST /api/players/update-wallet
+
+# Sauvegardes (protégé)
+GET  /api/saves                      # Toutes mes sauvegardes
+GET  /api/saves/slot/:slotNumber     # Une sauvegarde spécifique
+POST /api/saves                      # Créer une sauvegarde
+
+# WebSocket
+ws://localhost:3001/ws               # Connexion temps réel pour les commandes
+```
+
+---
+
+## Notes techniques
+
+- **Refactoring en cours** : Code fonctionnel mais pas optimal
+- **Priorité** : Fonctionnalité avant optimisation
+- **WebSocket** : Utilisé pour l'envoi des commandes aléatoires en temps réel
+- **Séparation des concerns** : Auth et Gameplay dans des services distincts pour la scalabilité
