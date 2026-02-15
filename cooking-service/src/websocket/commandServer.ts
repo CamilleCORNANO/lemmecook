@@ -1,6 +1,6 @@
 import { WebSocketServer, WebSocket } from 'ws'
 import { Server } from 'http'
-import * as orderService from '../services/orderService'
+import * as orderService from '../services/orderService.js'
 
 const playerConnections = new Map<string, WebSocket>()
 

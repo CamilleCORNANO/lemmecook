@@ -1,0 +1,15 @@
+canvas {
+    object-fit: cover;
+}
+
+@font-face {
+  font-family: pixel-font;
+  src: url(/fonts/Daydream\ DEMO.otf);
+}
+* {
+  font-family: "pixel-font";
+}
+
+html {
+  overflow: hidden;
+}

@@ -2,10 +2,9 @@ import { MongoClient, Db } from 'mongodb'
 import ingredientsSeed from './data/ingredients.seed'
 import recipesSeed from './data/recipes.seed'
 
-const url = process.env.MONGO_URL || `mongodb://localhost:${process.env.MONGO_PORT || 27017}`
-const urlLocal = `mongodb://localhost:${process.env.MONGO_PORT || 27017}`
+const url = process.env.MONGO_URL || process.env.MONGODB_URI || `mongodb://localhost:${process.env.MONGO_PORT || 27017}`
 
-export const client = new MongoClient(urlLocal)
+export const client = new MongoClient(url)
 let db: Db | null = null
 
 export async function connectDB() {

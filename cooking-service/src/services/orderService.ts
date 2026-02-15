@@ -1,4 +1,4 @@
-import { sendCommandToPlayer } from '../websocket/commandServer'
+import { sendCommandToPlayer } from '../websocket/commandServer.js'
 
 const COMMANDS = [
   { wants : "recipe", recipeId: "" },
