@@ -63,19 +63,16 @@ export async function signIn(c: Context) {
     const db = await connectDB()
     const users = db.collection('users')
 
-    // Trouve l'utilisateur
     const user = await users.findOne({ email })
     if (!user) {
       return c.json({ error: 'Email ou mot de passe incorrect' }, 401)
     }
 
-    // Vérifie le mot de passe
     const validPassword = await bcrypt.compare(password, user.password)
     if (!validPassword) {
       return c.json({ error: 'Email ou mot de passe incorrect' }, 401)
     }
 
-    // Générer le JWT
     const token = jwt.sign(
       { userId: user._id, email: user.email },
       JWT_SECRET,

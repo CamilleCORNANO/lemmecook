@@ -12,12 +12,14 @@
     "dotenv": "^17.2.4",
     "hono": "^4.11.9",
     "jsonwebtoken": "^9.0.3",
-    "mongodb": "^7.1.0"
+    "mongodb": "^7.1.0",
+    "ws": "^8.19.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20.19.33",
+    "@types/ws": "^8.18.1",
     "tsx": "^4.7.1",
     "typescript": "^5.8.3"
   }
