@@ -1,4 +1,6 @@
 import { MongoClient, Db } from 'mongodb'
+import ingredientsSeed from './data/ingredients.seed'
+import recipesSeed from './data/recipes.seed'
 
 const url = process.env.MONGO_URL || `mongodb://localhost:${process.env.MONGO_PORT || 27017}`
 const urlLocal = `mongodb://localhost:${process.env.MONGO_PORT || 27017}`
@@ -19,10 +21,28 @@ export async function connectDB() {
 }
 
 export async function fillUpDB() {
+  try {
+    const db = await connectDB()
+    const collectionRecipes = db.collection('recipes')
+    if ((await collectionRecipes.countDocuments()) === 0) {
+      await collectionRecipes.insertMany(recipesSeed)
+    } else {
+      console.log('La collection "recipes" n\'est pas vide, aucun document inséré')
+    }
+    const collectionIngredients = db.collection('ingredients')
+    if ((await collectionIngredients.countDocuments()) === 0) {
+      await collectionIngredients.insertMany(ingredientsSeed)
+    } else {
+      console.log('La collection "ingredients" n\'est pas vide, aucun document inséré')
+    }
+    console.log('Base de données remplie avec succès')
+  }
+  catch (error) {
+    console.error('Erreur lors du remplissage de la base de données:', error)
+    throw error}
+  }
 
 
-
-}
 export async function connectDBDebug() {
   try {
     console.log('🔌 Création du client MongoDB...')
@@ -50,4 +70,8 @@ export function getDB() {
   return db
 }
 
+export default { connectDB,
+ fillUpDB,
+ getDB
+}
 

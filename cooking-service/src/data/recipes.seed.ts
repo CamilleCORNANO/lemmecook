@@ -168,3 +168,5 @@ const recipes = [
         linkPix: "https://example.com/quiche-au-thon.jpg"
     }
 ]
+
+export default recipes
